@@ -9,6 +9,7 @@
     "prettier-check": "prettier --list-different **/*.js",
     "lint-fix": "eslint --fix .",
     "lint-check": "eslint .",
+    "lint:prettier": "prettier --list-different  '{App,__{tests,mocks}__}/**/*.js'",
     "precommit": "lint-staged"
   },
   "husky": {
@@ -17,10 +18,12 @@
     }
   },
   "lint-staged": {
-    "App/**/*.js": [
-      "npm run lint-check",
-      "git add ."
-    ]
+    "linters": {
+      "*.js": [
+        "eslint",
+        "git add"
+      ]
+    }
   },
   "dependencies": {
     "immutable": "^4.0.0-rc.12",
