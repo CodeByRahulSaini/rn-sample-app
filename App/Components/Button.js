@@ -4,9 +4,8 @@ import {
   View, TouchableOpacity, TouchableNativeFeedback, Platform, StyleSheet,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { heightPercentageToDP } from 'react-native-responsive-screen';
 import Text from './Text';
-import { ApplicationStyles, Colors, Fonts } from '../Theme';
+import { ApplicationStyles, Colors } from '../Theme';
 
 const styles = StyleSheet.create({
   buttonStyle: {
@@ -15,11 +14,19 @@ const styles = StyleSheet.create({
 });
 
 function Button({
-  onPress, title, icon, style, titleStyle, iconSize, buttonWrapperStyle, iconColor, children,
+  onPress, title, icon, style, titleStyle, iconSize, buttonWrapperStyle,
+  iconColor, children,
 }) {
   const Content = () => (
     <Fragment>
-      {!!icon && <Icon name={icon} size={iconSize || ApplicationStyles.iconSize} color={iconColor} />}
+      {!!icon && (
+      <Icon
+        name={icon}
+        size={iconSize || ApplicationStyles.iconSize}
+        color={iconColor}
+      />
+      )
+      }
       {!!title && <Text style={[{ ...ApplicationStyles.button }, titleStyle]}>{ title }</Text>}
       {!!children && children }
     </Fragment>
@@ -71,7 +78,7 @@ Button.defaultProps = {
   buttonWrapperStyle: {},
   children: null,
   iconSize: null,
-  onPress: () => alert('Its working'),
+  onPress: () => { /* alert('Its working') */ },
   iconColor: Colors.darkFont,
 };
 

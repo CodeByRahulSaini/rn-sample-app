@@ -1,56 +1,18 @@
-import React, { Fragment, Component } from 'react';
+import React, { Component } from 'react';
 import {
-  View, StyleSheet, ScrollView, ActivityIndicator,
+  View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
-// import CheckBox from 'react-native-checkbox';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
-  Text, NavigationBar, TextInput, Button,
+  Text, TextInput, Button,
 } from '../../Components';
-import {
-  Colors, FontSizes, Fonts, FontStyles, ApplicationStyles,
-} from '../../Theme';
+import { ApplicationStyles } from '../../Theme';
 import UserActions from '../../Stores/User/Actions';
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.background, paddingTop:hp('9%') },
-  subContainer: { flex: 1, paddingHorizontal: wp('7%') },
-  firstSection: { flex: 1 },
-  secondSection: { flex: 4, marginTop: hp('5%') },
-  remeberPassContainer: {
-    marginVertical: hp('1%'),
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignContent: 'center',
-    justifyContent: 'space-between',
-  },
-  remeberText: { ...ApplicationStyles.body },
-  forgetButton: {
-    ...ApplicationStyles.body,
-
-  },
-  forgetButtonContainer: { alignSelf: 'center' },
-  loginContainer: {
-    marginTop: hp('5%'),
-    backgroundColor: ApplicationStyles.primaryColor.color,
-    borderRadius: ApplicationStyles.commonBorderRadius(wp('80%')),
-    width: wp('80%'),
-    alignSelf: 'center',
-    height: hp('7%'),
-  },
-  loginTitle: { },
-  signUpLinkContainer: {
-    width: wp('80%'), marginVertical: hp('2%'), flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center',
-  },
-  signUpContainer: { alignSelf: 'center' },
-  signUpButton: {
-    ...ApplicationStyles.info, ...ApplicationStyles.primaryColor,
-  },
-});
-
+import styles from './LogInStyle';
+import { Validations } from '../../Utils';
+import ToastService from '../../Services/ToastService';
 
 class LoginScreen extends Component {
   static get propTypes() {
@@ -59,36 +21,57 @@ class LoginScreen extends Component {
     };
   }
 
+  static showToast() {
+    ToastService('Lorem ipsum sit amet.');
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       email: null,
-      password: '',
-      isChecked: false,
+      password: null,
       errors: {},
     };
     this.loginInit = this.loginInit.bind(this);
-    TextInput.validateForm = TextInput.validateForm.bind(this);
-    TextInput.updateTextInput = TextInput.updateTextInput.bind(this);
+    this.validateForm = this.validateForm.bind(this);
+    this.updateTextInput = this.updateTextInput.bind(this);
     this.passwordRef = React.createRef();
   }
 
+  updateTextInput(key, value) {
+    this.setState({ [key]: value });
+  }
+
+  validateForm(keys = []) {
+    const { email, password } = this.state;
+    let errors = {};
+
+    if (keys.includes('email') && !Validations.validateEmail(email)) {
+      errors = { ...errors, email: 'Email must be valid' };
+    }
+
+    if (keys.includes('password') && !Validations.validatePassword(password)) {
+      errors = { ...errors, password: 'Enter a valid password' };
+    }
+
+    this.setState({ errors });
+    return Object.keys(errors).length === 0;
+  }
 
   loginInit() {
     const { loginInit } = this.props;
     const { email, password } = this.state;
-    if (!TextInput.validateForm(['email', 'password'])) return false;
-
-    loginInit({ email: email, password });
+    if (!this.validateForm(['email', 'password'])) return false;
+    loginInit({ email, password });
+    return true;
   }
-
 
   render() {
     const { navigation } = this.props;
-    const { errors, isChecked } = this.state;
+    const { errors } = this.state;
     return (
       <View style={styles.container}>
-        <KeyboardAwareScrollView style={styles.subContainer}>
+        <KeyboardAwareScrollView keyboardShouldPersistTaps="handled" style={styles.subContainer}>
           <View style={styles.firstSection}>
             <Text style={ApplicationStyles.headline}>Login</Text>
             <Text style={ApplicationStyles.subHeadline}>Get started with your journey</Text>
@@ -98,7 +81,7 @@ class LoginScreen extends Component {
               error={errors.email}
               label="Email"
               returnKeyType="next"
-              onChangeText={text => TextInput.updateTextInput('email', text)}
+              onChangeText={text => this.updateTextInput('email', text)}
               onSubmitEditing={() => this.passwordRef.current.focus()}
             />
             <TextInput
@@ -108,17 +91,18 @@ class LoginScreen extends Component {
               returnKeyType="done"
               secureTextEntry
               onSubmitEditing={this.loginInit}
-              onChangeText={text => TextInput.updateTextInput('password', text)}
+              onChangeText={text => this.updateTextInput('password', text)}
               placeholder="Enter between 6 to 18 characters"
-            /> 
+            />
             <Button
               style={styles.loginContainer}
               titleStyle={styles.loginTitle}
               onPress={this.loginInit}
               title="CONTINUE TO LOGIN"
             />
+
             <View style={styles.signUpLinkContainer}>
-              <Text style={{ ...ApplicationStyles.info }}>Don't have an account? </Text>
+              <Text style={{ ...ApplicationStyles.info }}>Dont have an account? </Text>
               <Button
                 style={styles.signUpContainer}
                 titleStyle={styles.signUpButton}
@@ -126,12 +110,23 @@ class LoginScreen extends Component {
                 onPress={() => navigation.navigate('SignUp')}
               />
             </View>
+            <Button
+              style={styles.toastContainer}
+              titleStyle={styles.signUpButton}
+              onPress={LoginScreen.showToast}
+              title="Show Toast (Custom native module)"
+            />
           </View>
         </KeyboardAwareScrollView>
       </View>
     );
   }
 }
+
+LoginScreen.propTypes = {
+  loginInit: PropTypes.func.isRequired,
+};
+
 
 export default connect(null, {
   loginInit: UserActions.loginInit,

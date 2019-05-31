@@ -8,7 +8,7 @@ import { createReducer } from 'reduxsauce';
 import { INITIAL_STATE } from './InitialState';
 import { AppTypes } from './Actions';
 
-export const isLoading = (state, { isLoading }) => ({
+export const manageLoading = (state, { isLoading }) => ({
   ...state,
   isLoading,
 });
@@ -17,5 +17,5 @@ export const isLoading = (state, { isLoading }) => ({
  * @see https://github.com/infinitered/reduxsauce#createreducer
  */
 export const reducer = createReducer(INITIAL_STATE, {
-  [AppTypes.IS_LOADING]: isLoading,
+  [AppTypes.IS_LOADING]: manageLoading,
 });

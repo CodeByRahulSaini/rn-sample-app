@@ -1,44 +1,17 @@
 import React, { Component } from 'react';
 import {
-  View, StyleSheet, ScrollView,
+  View,
 } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
   Text, NavigationBar, TextInput, Button,
 } from '../../Components';
-import { Colors, FontSizes, ApplicationStyles } from '../../Theme';
+import { ApplicationStyles } from '../../Theme';
 import UserActions from '../../Stores/User/Actions';
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.background },
-  subContainer: { flex: 1, paddingHorizontal: wp('7%') },
-  firstSection: { flex: 1 },
-  secondSection: { flex: 4, marginTop: hp('5%') },
-  tabularButton: {
-    marginVertical: hp('4%'),
-    flexDirection: 'row',
-    borderRadius: ApplicationStyles.commonBorderRadius(wp('80%')),
-    overflow: 'hidden',
-    width: wp('80%'),
-  },
-  tabButton: {
-    flex: 1,
-    alignSelf: 'center',
-    height: hp('7%'),
-  },
-  submitContainer: {
-    marginVertical: hp('5%'),
-    backgroundColor: ApplicationStyles.primaryColor.color,
-    borderRadius: ApplicationStyles.commonBorderRadius(wp('80%')),
-    width: wp('80%'),
-    alignSelf: 'center',
-    height: hp('7%'),
-  },
-  submitTitle: { },
-});
+import styles from './SignUpStyle';
+import { Validations } from '../../Utils';
 
 
 class SignUpScreen extends Component {
@@ -52,80 +25,81 @@ class SignUpScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: null,
+      email: '',
       password: '',
-      userType: 'user',
       errors: {},
     };
-    TextInput.validateForm = TextInput.validateForm.bind(this);
-    TextInput.updateTextInput = TextInput.updateTextInput.bind(this);
+    this.validateForm = this.validateForm.bind(this);
+    this.updateTextInput = this.updateTextInput.bind(this);
     this.passwordRef = React.createRef();
+    this.registerInit = this.registerInit.bind(this);
   }
 
-  tabButtonsStyle(renderedUserType) {
-    const { userType } = this.state;
-    const activeStyle = { backgroundColor: ApplicationStyles.primaryColor.color };
-    const deactiveStyle = { backgroundColor: ApplicationStyles.lightBackgkround.color };
-    const activeTitleStyle = { color: ApplicationStyles.lightColor.color };
-    const deactiveTitleStyle = { color: Colors.darkFont };
-    switch (renderedUserType) {
-      case 'user':
-        return userType === 'user'
-          ? { container: activeStyle, title: activeTitleStyle }
-          : { container: deactiveStyle, title: deactiveTitleStyle };
-      case 'ngo':
-        return userType === 'ngo'
-          ? { container: activeStyle, title: activeTitleStyle }
-          : { container: deactiveStyle, title: deactiveTitleStyle };
-      default: return {};
+  updateTextInput(key, value) {
+    this.setState({ [key]: value });
+  }
+
+  validateForm(keys = []) {
+    const { email, password } = this.state;
+    let errors = {};
+
+    if (keys.includes('email') && !Validations.validateEmail(email)) {
+      errors = { ...errors, email: 'Email must be valid' };
     }
+
+    if (keys.includes('password') && !Validations.validatePassword(password)) {
+      errors = { ...errors, password: 'Enter a valid password' };
+    }
+
+    this.setState({ errors });
+    return Object.keys(errors).length === 0;
   }
 
-
-  reegisterInit() {
+  registerInit() {
     const { registerInit } = this.props;
     const { email, password } = this.state;
-    if (!TextInput.validateForm(['password'])) return false;
+    // alert(email)
+    if (!this.validateForm(['email', 'password'])) return false;
 
     registerInit({ email, password });
+    return true;
   }
 
 
   render() {
     const {
-      email, password, userType, errors,
+      errors,
     } = this.state;
     const { navigation } = this.props;
-
     return (
       <View style={styles.container}>
         <NavigationBar {...navigation} />
 
-        <KeyboardAwareScrollView style={styles.subContainer}>
+        <KeyboardAwareScrollView keyboardShouldPersistTaps="handled" style={styles.subContainer}>
           <View style={styles.firstSection}>
             <Text style={ApplicationStyles.headline}>Signup</Text>
-            <Text style={ApplicationStyles.subHeadline}>Let's take first step</Text>
+            <Text style={ApplicationStyles.subHeadline}>Lets take first step</Text>
           </View>
           <View style={styles.secondSection}>
             <TextInput
               error={errors.email}
               label="Email"
               returnKeyType="next"
-              onChangeText={text => TextInput.updateTextInput('email', text)}
+              onChangeText={text => this.updateTextInput('email', text)}
               onSubmitEditing={() => this.passwordRef.current.focus()}
-            /> 
+            />
             <TextInput
-              error={errors.email}
+              error={errors.password}
               label="Password"
               returnKeyType="next"
-              onChangeText={text => TextInput.updateTextInput('email', text)}
-              onSubmitEditing={() => this.passwordRef.current.focus()}
-            /> 
+              onChangeText={text => this.updateTextInput('password', text)}
+              onSubmitEditing={() => this.registerInit()}
+            />
             <Button
               style={styles.submitContainer}
               titleStyle={styles.submitTitle}
               title="SUBMIT"
-              onPress={() => navigation.goBack()}
+              onPress={this.registerInit}
             />
           </View>
         </KeyboardAwareScrollView>
@@ -133,6 +107,14 @@ class SignUpScreen extends Component {
     );
   }
 }
+
+
+SignUpScreen.propTypes = {
+  registerInit: PropTypes.func.isRequired,
+};
+
+SignUpScreen.defaultProps = {
+};
 
 export default connect(null, {
   registerInit: UserActions.registerInit,

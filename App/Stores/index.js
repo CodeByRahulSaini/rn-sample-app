@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import rootSaga from '../Sagas';
 import configureStore from './CreateStore';
 import { reducer as userReducer } from './User/Reducers';
-import { reducer as appReducer } from './App/Reducers.js';
+import { reducer as appReducer } from './App/Reducers';
 
 export default () => {
   const rootReducer = combineReducers({

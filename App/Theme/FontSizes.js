@@ -14,11 +14,4 @@ export default {
   h8: RF(38 / sizeFactor),
   h9: RF(36 / sizeFactor),
   h10: RF(35 / sizeFactor),
-
-  // h1: RF(3.5),
-  // h2: RF(2.5),
-  // h3: RF(2.2),
-  // h4: RF(2),
-  // h5: RF(1.5),
-
 };

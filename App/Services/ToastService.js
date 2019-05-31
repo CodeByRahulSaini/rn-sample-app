@@ -1,6 +1,7 @@
-import Toast from 'react-native-tiny-toast';
-import Colors from '../Theme/Colors';
+import { NativeModules } from 'react-native';
+
+const Toast = NativeModules.CustomToast;
 
 export default (msg = '') => {
-  Toast.show(msg, { maskColor: Colors.font.shadyLady });
+  Toast.show(msg, Toast.SHORT);
 };

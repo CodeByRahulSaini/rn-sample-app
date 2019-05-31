@@ -20,16 +20,11 @@ import { createActions } from 'reduxsauce';
  */
 const { Types, Creators } = createActions({
   loginInit: ['payload'],
+  loginSuccess: ['payload'],
   logoutInit: null,
   logoutSuccess: null,
-  forgotPasswordInit: ['payload'],
   registerInit: ['payload'],
-  // The operation has started and is loading
-  fetchTemperatureLoading: null,
-  // The temperature was successfully fetched
-  fetchTemperatureSuccess: ['temperature'],
-  // An error occurred
-  fetchTemperatureFailure: ['errorMessage'],
+  startup: null,
 });
 
 export const UserTypes = Types;

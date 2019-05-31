@@ -3,10 +3,10 @@ import React from 'react';
 import {
   StyleSheet, View, StatusBar,
 } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp }
+  from 'react-native-responsive-screen';
 import Button from './Button';
 import Text from './Text';
-import { Colors } from '../Theme';
 
 const styles = StyleSheet.create({
   container: {
@@ -41,7 +41,8 @@ const styles = StyleSheet.create({
 
 
 function NavigationBar({
-  title, showRightSection, goBack, containerStyle, showLeftSection, rightIcon, statusBarColor,
+  title, showRightSection, goBack, containerStyle,
+  showLeftSection, rightIcon,
 }) {
   return (
     <View style={[styles.container, containerStyle]}>
@@ -65,7 +66,7 @@ function NavigationBar({
         <View style={styles.rightArea}>
           {showRightSection && (
           <Button
-            onPress={() => { alert(2); }}
+            onPress={() => { /* alert('working'); */ }}
             icon={rightIcon}
             iconSize={wp('6%')}
           />
@@ -84,7 +85,6 @@ NavigationBar.propTypes = {
   containerStyle: PropTypes.object,
   showLeftSection: PropTypes.bool,
   rightIcon: PropTypes.string,
-  statusBarColor: PropTypes.string,
 };
 
 NavigationBar.defaultProps = {
@@ -94,7 +94,6 @@ NavigationBar.defaultProps = {
   containerStyle: {},
   showLeftSection: true,
   rightIcon: 'md-create',
-  statusBarColor: Colors.accent,
 };
 
 
